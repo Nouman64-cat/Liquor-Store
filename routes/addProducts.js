@@ -21,12 +21,11 @@ router.post('/', async (req, res) => {
 
     // Save the new product to the database
     const savedProduct = await newProduct.save();
-    console.log('Received data:', req.body);
-    console.log('Received image:', req.file); 
+    // console.log('Received data:', req.body);
 
     res.status(201).json(savedProduct); // Respond with the saved product
   } catch (error) {
-    console.error('Error adding product:', error);
+    // console.error('Error adding product:', error);
     res.status(500).json({ error: 'An error occurred while adding the product' });
   }
 });

@@ -6,6 +6,7 @@ import multer from 'multer'; // Import multer for handling file uploads
 import connectDB from './mongodb/connect.js';
 
 import addProducts from './routes/addProducts.js';
+import showProducts from './routes/showProducts.js';
 
 import Product from './mongodb/models/product.js';
 
@@ -22,7 +23,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 app.use('/api/addProducts', addProducts);
-
+app.use("/api/showProducts", showProducts);
 // Add the uploadImage API route
 app.post('/api/uploadImage', (req, res) => {
   try {
