@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const AddProduct = () => {
   const [postImage, setPostImage] = useState({ myFile: '' });
@@ -7,38 +7,42 @@ const AddProduct = () => {
   const [description, setDescription] = useState('');
   const [inStock, setInStock] = useState(true);
 
-  const handleImageUpload = async (newImage) => {
-    if (!newImage) {
-      console.log('No image provided for upload.');
-      return null; // Return null if no image is provided
-    }
+  useEffect(() => {
+  console.log('Updated postImage:', postImage);
+}, [postImage]);
 
-    try {
-      const response = await fetch('http://localhost:8080/api/uploadImage', {
-        method: 'POST',
-        body: JSON.stringify({ imageUrl: newImage }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+  // const handleImageUpload = async (newImage) => {
+  //   if (!newImage) {
+  //     console.log('No image provided for upload.');
+  //     return null; // Return null if no image is provided
+  //   }
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Image uploaded successfully:', data);
-        return data.imagePath; // Return the image path
-      } else {
-        console.error('Error uploading image');
-        return null; // Return null on error
-      }
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      return null; // Return null on error
-    }
-  };
+  //   try {
+  //     const response = await fetch('http://localhost:8080/api/uploadImage', {
+  //       method: 'POST',
+  //       body: JSON.stringify({ imageUrl: newImage }),
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
+
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       console.log('Image uploaded successfully:', data);
+  //       return data.imagePath; // Return the image path
+  //     } else {
+  //       console.error('Error uploading image');
+  //       return null; // Return null on error
+  //     }
+  //   } catch (error) {
+  //     console.error('Error uploading image:', error);
+  //     return null; // Return null on error
+  //   }
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const uploadedImagePath = await handleImageUpload(postImage);
+    const uploadedImagePath = postImage;
 
     if (uploadedImagePath !== null) {
       console.log('Image path received:', uploadedImagePath);
@@ -47,8 +51,9 @@ const AddProduct = () => {
       const formData = {
         name,
         description,
+        imageUrl: uploadedImagePath,
         inStock,
-        imageUrl: uploadedImagePath, // Use the returned image path
+         // Use the returned image path
       };
 
       try {
@@ -76,12 +81,20 @@ const AddProduct = () => {
     }
   };
 
+  // const handleFileUpload = async (e) => {
+  //   const file = e.target.files[0];
+  //   const base64 = await convertToBase64(file);
+  //   console.log('Image converted to base64:', base64);
+  //   setPostImage({ ...postImage, myFile: base64 });
+  //   console.log(postImage)
+  // };
   const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    const base64 = await convertToBase64(file);
-    console.log('Image converted to base64:', base64);
-    setPostImage({ ...postImage, myFile: base64 });
-  };
+  const file = e.target.files[0];
+  const base64 = await convertToBase64(file);
+  console.log('Image converted to base64:', base64);
+  setPostImage(base64); // Store the base64-encoded image data
+};
+
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
