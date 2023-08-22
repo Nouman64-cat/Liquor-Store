@@ -15,6 +15,9 @@ const Navbar = () => {
         <a href ="#carousel">
           <h1 className='cursor-pointer hover:opacity-60'>Products</h1>
         </a>
+        <Link to='/blog'>
+          <h1 className='cursor-pointer hover:opacity-60'>Blog</h1>
+        </Link>
       </div>
       <div className='flex justify-around'>
         <Link to = "/all-items">

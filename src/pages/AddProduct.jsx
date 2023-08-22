@@ -6,7 +6,9 @@ const AddProduct = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [inStock, setInStock] = useState(true);
-
+  const [price, setPrice] = useState(0);
+  const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
   useEffect(() => {
   console.log('Updated postImage:', postImage);
 }, [postImage]);
@@ -53,6 +55,7 @@ const AddProduct = () => {
         description,
         imageUrl: uploadedImagePath,
         inStock,
+        price,
          // Use the returned image path
       };
 
@@ -72,11 +75,18 @@ const AddProduct = () => {
           setName('');
           setDescription('');
           setInStock(true);
+          setPrice(0);
+          setIsSuccess(true);
+          setMessage('Product Added Successfully')
         } else {
           console.error('Error adding product');
+          setIsSuccess(false);
+          setMessage('Product Not Added')
         }
       } catch (error) {
         console.error('Error adding product:', error);
+        setIsSuccess(false);
+        setMessage('Product Not Added')
       }
     }
   };
@@ -96,7 +106,8 @@ const AddProduct = () => {
 };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
+    <div className="flex w-[60rem] justify-center mx-auto">
+    <div className="flex justify-center items-center shadow-lg drop-shadow-2xl">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
         <h2 className="text-2xl font-semibold mb-6">Add Product</h2>
         <form onSubmit={handleSubmit}>
@@ -113,6 +124,13 @@ const AddProduct = () => {
             <input type="checkbox" checked={inStock} onChange={() => setInStock(!inStock)} />
           </div>
           <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Price:</label>
+            <input
+              type="number"
+              className="mt-1 p-2 w-full border rounded-md"
+
+              onChange={(e) => setPrice(e.target.value)}
+            />
             <label className="block text-sm font-medium text-gray-700">Image:</label>
             <input 
           type="file"
@@ -127,7 +145,15 @@ const AddProduct = () => {
             Add Product
           </button>
         </form>
+        {
+          isSuccess ? (
+            <p>{message}</p>
+          ) : (
+            <p>{message}</p>
+          )
+        }
       </div>
+    </div>
     </div>
   );
 };
