@@ -7,9 +7,13 @@ import connectDB from './mongodb/connect.js';
 
 import addProducts from './routes/addProducts.js';
 import showProducts from './routes/showProducts.js';
-
+import deleteProduct from './routes/deleteProduct.js';
+import editProduct from './routes/editProduct.js';
 import Product from './mongodb/models/product.js';
-
+import createBlog from './routes/createBlog.js';
+import readBlog from './routes/readBlog.js';
+import deleteBlog from './routes/deleteBlog.js';
+import readOneBlog from './routes/readOneBlog.js';
 dotenv.config();
 
 const app = express();
@@ -24,26 +28,32 @@ const upload = multer({ storage });
 
 app.use('/api/addProducts', addProducts);
 app.use("/api/showProducts", showProducts);
+app.use("/api/deleteProduct", deleteProduct);
+app.use("/api/editProduct", editProduct);
+app.use("/api/createBlog", createBlog);
+app.use("/api/readBlog", readBlog);
+app.use("/api/deleteBlog", deleteBlog);
+app.use("/api/readOneBlog", readOneBlog);
 // Add the uploadImage API route
-app.post('/api/uploadImage', (req, res) => {
-  try {
-    const { image } = req.body; // Assuming the base64-encoded image data is sent in the request body
+// app.post('/api/uploadImage', (req, res) => {
+//   try {
+//     const { image } = req.body; // Assuming the base64-encoded image data is sent in the request body
 
-    if (!image) {
-      return res.status(400).json({ error: 'No image provided' });
-    }
+//     if (!image) {
+//       return res.status(400).json({ error: 'No image provided' });
+//     }
 
-    // You can now save the `image` data to your database or cloud storage
-    // For example, using mongoose:
-    // const newImage = new Image({ imageData: image });
-    // await newImage.save();
+//     // You can now save the `image` data to your database or cloud storage
+//     // For example, using mongoose:
+//     // const newImage = new Image({ imageData: image });
+//     // await newImage.save();
 
-    res.status(200).json({ success: true });
-  } catch (error) {
-    console.error('Error uploading image:', error);
-    res.status(500).json({ error: 'An error occurred while uploading the image' });
-  }
-});
+//     res.status(200).json({ success: true });
+//   } catch (error) {
+//     console.error('Error uploading image:', error);
+//     res.status(500).json({ error: 'An error occurred while uploading the image' });
+//   }
+// });
 
 
 app.get('/', (req, res) => {

@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { name, description, imageUrl, inStock } = req.body;
+    const { name, description, imageUrl, inStock, price } = req.body;
 
     // Create a new product instance using the Product schema
     const newProduct = new Product({
@@ -17,6 +17,7 @@ router.post('/', async (req, res) => {
       description,
       imageUrl,
       inStock,
+      price,
     });
 
     // Save the new product to the database
