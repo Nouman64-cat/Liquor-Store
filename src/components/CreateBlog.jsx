@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import Speech from './Speech';
+import { Button, CircularProgress, Modal } from '@mui/material';
+import './Blog.css'
+import { AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 
 const CreateBlog = () => {
   const [author, setAuthor] = useState('');
@@ -7,8 +9,21 @@ const CreateBlog = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [postImage, setPostImage] = useState({ myFile: '' });
+  const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleOpenModal = () => {
+  setIsModalOpen(true);
+};
+
+const handleCloseModal = () => {
+  setIsModalOpen(false);
+};
 
   const handleSubmit = async (e) => {
+    setLoading(true); // Start loading indicator
     e.preventDefault();
     const formData = {
         author,
@@ -32,7 +47,15 @@ const CreateBlog = () => {
         if (response.ok) {
           const responseData = await response.json();
           console.log('Blog Created successfully:', responseData);
-        }
+          setModalContent('Blog Created Successfully!');
+          handleOpenModal(); // Open success modal
+          setLoading(false); // Stop loading indicator
+          setIsSuccess(true);
+        } else {
+      setModalContent('Failed to Create Blog. Please try again.');
+      handleOpenModal(); // Open error modal
+      setLoading(false); // Stop loading indicator
+    }
     // Reset form fields after submission
     setAuthor('');
     setTopic('');
@@ -40,6 +63,7 @@ const CreateBlog = () => {
     setContent('');
       } catch (error){
         console.error('Error creating blog:', error);
+        
       }
   };
   const handleFileUpload = async (e) => {
@@ -104,7 +128,35 @@ const CreateBlog = () => {
         >
           Create
         </button>
+        
       </form>
+       <Modal open={loading} onClose={() => setLoading(false)}>
+        <div className="modal-content">
+          <div className="modal-inner">
+            
+          <CircularProgress color="primary" size={50} />
+          <h2>Blog Creation in Progress...</h2>
+        </div>
+        </div>
+      </Modal>
+              
+      <Modal open={isModalOpen} onClose={handleCloseModal}>
+  <div className="modal-content">
+    <div className="modal-inner">
+      <div className="flex items-center justify-center">
+        {isSuccess ? (
+          <AiOutlineCheckCircle className="h-6 w-6 text-green-500 mr-2" />
+        ) : (
+          <AiOutlineCloseCircle className="h-6 w-6 text-red-500 mr-2" />
+        )}
+        <h2>{modalContent}</h2>
+      </div>
+      <Button onClick={handleCloseModal} variant="contained" color="primary">
+        Close
+      </Button>
+    </div>
+  </div>
+</Modal>
     </div>
   );
 };
@@ -121,3 +173,7 @@ function convertToBase64(file){
   })
 }
 export default CreateBlog;
+
+
+
+

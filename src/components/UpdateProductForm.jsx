@@ -1,17 +1,28 @@
 import React, { useEffect, useState } from 'react';
-
+import { Button, CircularProgress, Modal } from '@mui/material';
+import { AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 const UpdateProductForm = ({ product, onUpdate }) => {
   const [postImage, setPostImage] = useState(null); // Change initial value to null
   const [editedProduct, setEditedProduct] = useState({ ...product });
-
+  const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
   useEffect(() => {
     if (product) {
       setEditedProduct(product); // Update the editedProduct state when the product prop changes
     }
   }, [product]);
+  const handleOpenModal = () => {
+  setIsModalOpen(true);
+};
 
+const handleCloseModal = () => {
+  setIsModalOpen(false);
+};
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true); // Start loading indicator
     try {
       const response = await fetch(`http://localhost:8080/api/editProduct/${editedProduct._id}`, {
         method: 'PUT',
@@ -23,9 +34,18 @@ const UpdateProductForm = ({ product, onUpdate }) => {
       if (response.ok) {
         console.log('Edit successful');
         onUpdate(editedProduct);
-      }
+        setLoading(false); // Stop loading indicator
+        setModalContent('Product info Updated Successfully!');
+          handleOpenModal(); // Open success modal
+          setIsSuccess(true);
+      } else {
+      setModalContent('Failed to Update Product info. Please try again.');
+      handleOpenModal(); // Open error modal
+      setIsSuccess(false);
+    }
     } catch (error) {
       console.error('Error editing product:', error);
+      setIsSuccess(false);
     }
   };
 
@@ -94,6 +114,32 @@ const UpdateProductForm = ({ product, onUpdate }) => {
           </button>
         </form>
       </div>
+      <Modal open={loading} onClose={() => setLoading(false)}>
+        <div className="modal-content">
+          <div className="modal-inner">
+            
+          <CircularProgress color="primary" size={50} />
+        <h2>Product info is updating...</h2>
+        </div>
+        </div>
+      </Modal>
+      <Modal open={isModalOpen} onClose={handleCloseModal}>
+  <div className="modal-content">
+    <div className="modal-inner">
+      <div className="flex items-center justify-center">
+        {isSuccess ? (
+          <AiOutlineCheckCircle className="h-6 w-6 text-green-500 mr-2" />
+        ) : (
+          <AiOutlineCloseCircle className="h-6 w-6 text-red-500 mr-2" />
+        )}
+        <h2>{modalContent}</h2>
+      </div>
+      <Button onClick={handleCloseModal} variant="contained" color="primary">
+        Close
+      </Button>
+    </div>
+  </div>
+</Modal>
       <div className=""></div>
     </div>
   );

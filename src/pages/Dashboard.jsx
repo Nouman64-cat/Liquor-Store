@@ -50,9 +50,9 @@ const Dashboard = () => {
   };
   return (
     <div className="bg-[#F5F5F5]">
-      <div className='w-full bg-[#F5F5F5] h-16 flex items-center justify-between'>
+      {/* <div className='w-full bg-[#F5F5F5] h-16 flex items-center justify-between'>
       <h1 className='text-[#2F2F2F] text-3xl font-bold p-5'>Dashboard</h1>
-      </div>
+      </div> */}
       <Box
       sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 524 }}
     >

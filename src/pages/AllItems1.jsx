@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Navbar, Footer } from '../components';
 import Pagination from '@mui/material/Pagination';
-import { Typography, CircularProgress, LinearProgress  } from '@mui/material';
+import { Typography, CircularProgress, LinearProgress, Modal, Button  } from '@mui/material';
 import { FaPhone } from 'react-icons/fa';
-import { AiFillCheckCircle, AiFillCloseCircle, AiFillDelete, AiFillEdit } from 'react-icons/ai';
+import { AiFillCheckCircle, AiFillCloseCircle, AiFillDelete, AiFillEdit, AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 import { Dialog } from '@headlessui/react';
 
 const ProductsPerPage = 6;
@@ -16,25 +16,42 @@ const AllItems1 = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [productIdToDelete, setProductIdToDelete] = useState(null);
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [confirm, setConfirm] = useState(false);
   useEffect(() => {
     fetchProducts();
     console.log('products:', products);
   }, []);
 
-  
+  const handleOpenModal = () => {
+  setIsModalOpen(true);
+};
+
+const handleCloseModal = () => {
+  setIsModalOpen(false);
+};
 
   const handleDelete = (productId) => {
+    
     setProductIdToDelete(productId);
     setIsDialogOpen(true);
+    
+    setConfirm(true);
+    confirmDelete(productId);
+  
   };
 
-  const confirmDelete = async () => {
+  const confirmDelete = async (id) => {
     setIsDialogOpen(false);
     setIsLoadingDelete(true);
+    setLoading(true);
+    setIsSuccess(false);
 
     try {
-      const response = await fetch(`http://localhost:8080/api/deleteProduct/${productIdToDelete}`, {
+      const response = await fetch(`http://localhost:8080/api/deleteProduct/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -44,9 +61,18 @@ const AllItems1 = () => {
       if (response.ok) {
         console.log('Deleted successfully');
         fetchProducts();
+        setLoading(false); // Stop loading indicator
+        setModalContent('Product Deleted Successfully!');
+        handleOpenModal(); // Open success modal
+        setIsSuccess(true);
+      } else {
+        setModalContent('Failed to Delete Product. Please try again.');
+        handleOpenModal(); // Open error modal
+        setIsSuccess(false);
       }
     } catch (error) {
       console.error('Error deleting product:', error);
+      setIsSuccess(false);
     } finally {
       setIsLoadingDelete(false);
     }
@@ -83,20 +109,7 @@ const AllItems1 = () => {
           <Typography variant="h3" component="div" gutterBottom className="text-center">
             All items
           </Typography>
-          <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
-        <div className="p-4 text-center bg-white shadow-md border border-gray-300 rounded-lg">
-          <Dialog.Title className="text-lg font-semibold mb-2">Confirm Deletion</Dialog.Title>
-          <p className="text-gray-600 mb-4">Are you sure you want to delete this product?</p>
-          <div className="flex justify-center space-x-4">
-            <button onClick={() => setIsDialogOpen(false)} className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-100">
-              Cancel
-            </button>
-            <button onClick={confirmDelete} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-              Delete
-            </button>
-          </div>
-        </div>
-      </Dialog>
+          
           {isLoading ? (
             <div className="flex flex-col align-center opacity:50 w-full justify-center items-center">
               <CircularProgress size={100} className="mt-10 mb-5" />
@@ -133,6 +146,46 @@ const AllItems1 = () => {
           </div>
         </div>
       </div>
+      <Modal open={loading} onClose={() => setLoading(false)}>
+        <div className="modal-content">
+          <div className="modal-inner">
+            
+          <CircularProgress color="primary" size={50} />
+        <h2>Product is deleting...</h2>
+        {/* <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
+        <div className="p-4 text-center bg-white shadow-md border border-gray-300 rounded-lg">
+          <Dialog.Title className="text-lg font-semibold mb-2">Confirm Deletion</Dialog.Title>
+          <p className="text-gray-600 mb-4">Are you sure you want to delete this product?</p>
+          <div className="flex justify-center space-x-4">
+            <button onClick={() => setIsDialogOpen(false)} className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-100">
+              Cancel
+            </button>
+            <button onClick={confirmDelete} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+              Delete
+            </button>
+          </div>
+        </div>
+      </Dialog> */}
+        </div>
+        </div>
+      </Modal>
+      <Modal open={isModalOpen} onClose={handleCloseModal}>
+  <div className="modal-content">
+    <div className="modal-inner">
+      <div className="flex items-center justify-center">
+        {isSuccess ? (
+          <AiOutlineCheckCircle className="h-6 w-6 text-green-500 mr-2" />
+        ) : (
+          <AiOutlineCloseCircle className="h-6 w-6 text-red-500 mr-2" />
+        )}
+        <h2>{modalContent}</h2>
+      </div>
+      <Button onClick={handleCloseModal} variant="contained" color="primary">
+        Close
+      </Button>
+    </div>
+  </div>
+</Modal>
   </div>
    
   );

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { UpdateProductForm } from '../components';
 import { AiFillCheckCircle, AiFillCloseCircle, AiFillDelete, AiFillEdit } from 'react-icons/ai';
-
+import { CircularProgress } from '@mui/material';
 const UpdateItem = () => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
-
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     fetchProducts();
     console.log('products:', products);
@@ -20,6 +20,8 @@ const UpdateItem = () => {
       }
     } catch (error) {
       console.error('Error fetching products:', error);
+    } finally {
+      setIsLoading(false); // Set loading to false when data fetching is complete
     }
   };
   const handleEdit = (product) => {
@@ -34,6 +36,12 @@ const UpdateItem = () => {
   return (
     <div className='flex ml-10'>
       <UpdateProductForm product={selectedProduct} onUpdate={handleProductUpdate} />
+      {isLoading ? (
+            <div className="flex flex-col align-center opacity:50 w-full justify-center items-center ml-[19rem] ">
+              <CircularProgress size={100} className="mt-10 mb-5" />
+              <h2 className="mb-10">Loading Products...</h2>
+            </div>
+          ) : (
       <div className="flex flex-col overflow-y-auto max-h-[520px] ">
             {products.map((product, index) => (
               <div key={index} className="p-6 bg-white rounded-lg shadow-lg border drop-shadow-2xl">
@@ -57,6 +65,7 @@ const UpdateItem = () => {
               </div>
             ))}
           </div>
+          )}
     </div>
   )
 }
